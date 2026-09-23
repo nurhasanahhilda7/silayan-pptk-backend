@@ -54,7 +54,7 @@ class TiketController extends Controller
         }
         $data = $request->validate([
             'status' => 'sometimes|string',
-            'catatan' => 'sometimes|string',
+            'catatan' => 'sometimes|nullable|string',
         ]);
         $tiket->update($data);
         return response()->json($tiket);
