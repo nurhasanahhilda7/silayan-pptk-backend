@@ -59,4 +59,29 @@ class AuthController extends Controller
         }
         return response()->json($akun);
     }
+
+    public function resetPassword(Request $request)
+    {
+        $data = $request->validate([
+            'username' => 'required|string',
+            'nama' => 'required|string',
+            'password_baru' => 'required|string|min:6',
+        ]);
+
+        $akun = Akun::find($data['username']);
+
+        if (!$akun) {
+            return response()->json(['error' => 'Akun dengan No HP tersebut tidak ditemukan.'], 404);
+        }
+
+        // Verifikasi identitas: nama harus cocok (tanpa peduli besar/kecil huruf & spasi di ujung)
+        if (strcasecmp(trim($akun->nama), trim($data['nama'])) !== 0) {
+            return response()->json(['error' => 'Nama tidak cocok dengan data saat daftar. Pastikan menulis nama lengkap persis seperti saat registrasi.'], 401);
+        }
+
+        $akun->password = $data['password_baru'];
+        $akun->save();
+
+        return response()->json(['message' => 'Kata sandi berhasil diganti.']);
+    }
 }
